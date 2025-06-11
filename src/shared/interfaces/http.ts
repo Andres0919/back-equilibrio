@@ -1,16 +1,5 @@
-export interface HttpRequest<
-  TBody = unknown,
-  TParams = unknown,
-  TQuery = unknown,
-  THeaders = unknown
-> {
-  body: TBody;
-  params: TParams;
-  query: TQuery;
-  headers: THeaders;
-}
-
-export interface HttpResponse<T = unknown> {
-  statusCode: number;
-  body: T;
+export interface HttpProvider {
+  registerRoute(path: string, routeHandler: any): void;
+  listen(port: number): Promise<void>;
+  getServerInstance(): any;
 }

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { HttpController } from "../../../controllers/httpController";
-import { HttpRequest } from "../../../../../../shared/interfaces/http";
 
 export function expressRouteAdapter(controller: HttpController) {
   return async (req: Request, res: Response) => {
