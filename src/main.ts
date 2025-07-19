@@ -1,8 +1,8 @@
-import server from "./app";
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
 
-async function main() {
-  await server.listen(3000);
-  console.log("Server listening at http://localhost:3000");
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.listen(process.env.PORT ?? 3000);
 }
-
-main();
+bootstrap();
