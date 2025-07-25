@@ -10,4 +10,10 @@ export class InMemoryTransactionRepository implements ITransactionRepository {
       resolve(transaction);
     });
   }
+
+  async findAll(): Promise<Transaction[]> {
+    return new Promise((resolve) => {
+      resolve(this.transactions);
+    });
+  }
 }

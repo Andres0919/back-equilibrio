@@ -1,14 +1,18 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import {
   CreateTransactionUseCase,
   Input,
 } from '../application/use-cases/create-transaction.use-case';
+import { GetAllTransactionsUseCase } from '../application/use-cases/get-all-transactions.use-case';
 import { Currency } from '../domain/entities/transaction.entity';
 
 @Controller('transactions')
 export class TransactionsController {
-  constructor(private readonly createTransaction: CreateTransactionUseCase) {}
+  constructor(
+    private readonly createTransaction: CreateTransactionUseCase,
+    private readonly getAllTransactions: GetAllTransactionsUseCase,
+  ) {}
 
   @Post()
   async create(@Body() body: Input) {
@@ -23,5 +27,10 @@ export class TransactionsController {
     };
 
     return this.createTransaction.execute(input);
+  }
+
+  @Get()
+  async findAll() {
+    return this.getAllTransactions.execute();
   }
 }
