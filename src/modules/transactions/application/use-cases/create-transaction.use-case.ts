@@ -5,7 +5,7 @@ import {
 } from '../../domain/entities/transaction.entity';
 import { ITransactionRepository } from '../../domain/repositories/transaction.repository';
 
-interface Input {
+export interface Input {
   id: string;
   amount: number;
   type: TransactionType;
