@@ -1,26 +1,21 @@
-import {
-  IsDateString,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   Currency,
   TransactionType,
-} from '../domain/entities/transaction.entity';
+} from '../../domain/entities/transaction.entity';
 
-export class CreateTransactionDto {
+export class TransactionResponseDto {
   @ApiProperty({
-    description: 'Monto de la transacción en la moneda especificada',
+    description: 'Identificador único de la transacción',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  id: string;
+
+  @ApiProperty({
+    description: 'Monto de la transacción',
     example: 50000,
     minimum: 0.01,
-    type: 'number',
   })
-  @IsNumber()
-  @IsNotEmpty()
   amount: number;
 
   @ApiProperty({
@@ -28,8 +23,6 @@ export class CreateTransactionDto {
     enum: TransactionType,
     example: TransactionType.INCOME,
   })
-  @IsEnum(TransactionType)
-  @IsNotEmpty()
   type: TransactionType;
 
   @ApiProperty({
@@ -37,36 +30,36 @@ export class CreateTransactionDto {
     enum: Currency,
     example: Currency.COP,
   })
-  @IsEnum(Currency)
-  @IsNotEmpty()
   currency: Currency;
 
   @ApiProperty({
-    description:
-      'Identificador de la categoría a la que pertenece la transacción',
+    description: 'Identificador de la categoría',
     example: 'salary',
-    type: 'string',
   })
-  @IsString()
-  @IsNotEmpty()
   categoryId: string;
 
   @ApiProperty({
-    description: 'Fecha y hora de la transacción en formato ISO 8601',
+    description: 'Fecha de la transacción',
     example: '2025-01-15T10:30:00.000Z',
-    type: 'string',
   })
-  @IsDateString()
-  @IsNotEmpty()
-  date: string;
+  date: Date;
 
   @ApiProperty({
     description: 'Descripción opcional de la transacción',
     example: 'Pago de salario mensual',
     required: false,
-    type: 'string',
   })
-  @IsOptional()
-  @IsString()
   description?: string;
+
+  @ApiProperty({
+    description: 'Fecha de creación del registro',
+    example: '2025-01-15T10:30:00.000Z',
+  })
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'Fecha de última actualización del registro',
+    example: '2025-01-15T10:30:00.000Z',
+  })
+  updatedAt?: Date;
 }

@@ -1,26 +1,39 @@
 import { Provider } from '@nestjs/common';
-import { CreateTransactionUseCase } from './application/use-cases/create-transaction.use-case';
-import { GetAllTransactionsUseCase } from './application/use-cases/get-all-transactions.use-case';
-import { TransactionTypeOrmRepository } from './infrastructure/repositories/typeorm.repository';
-import { ITransactionRepository } from './domain/repositories/transaction.repository';
+import {
+  CreateTransactionUseCase,
+  GetAllTransactionsUseCase,
+} from './application';
+import { TransactionRepository } from './domain';
+import { TransactionTypeOrmRepository } from './infrastructure';
+
+// Repository Provider
+export const TRANSACTION_REPOSITORY = 'TRANSACTION_REPOSITORY';
 
 export const TransactionRepositoryProvider: Provider = {
-  provide: 'TransactionRepository',
+  provide: TRANSACTION_REPOSITORY,
   useClass: TransactionTypeOrmRepository,
 };
 
+// Use Case Providers
 export const CreateTransactionUseCaseProvider: Provider = {
   provide: CreateTransactionUseCase,
-  useFactory: (repo: ITransactionRepository) => {
-    return new CreateTransactionUseCase(repo);
+  useFactory: (repository: TransactionRepository) => {
+    return new CreateTransactionUseCase(repository);
   },
-  inject: ['TransactionRepository'],
+  inject: [TRANSACTION_REPOSITORY],
 };
 
 export const GetAllTransactionsUseCaseProvider: Provider = {
   provide: GetAllTransactionsUseCase,
-  useFactory: (repo: ITransactionRepository) => {
-    return new GetAllTransactionsUseCase(repo);
+  useFactory: (repository: TransactionRepository) => {
+    return new GetAllTransactionsUseCase(repository);
   },
-  inject: ['TransactionRepository'],
+  inject: [TRANSACTION_REPOSITORY],
 };
+
+// All providers export
+export const TransactionProviders = [
+  TransactionRepositoryProvider,
+  CreateTransactionUseCaseProvider,
+  GetAllTransactionsUseCaseProvider,
+];

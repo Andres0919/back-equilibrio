@@ -1,20 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-  TransactionRepositoryProvider,
-  CreateTransactionUseCaseProvider,
-  GetAllTransactionsUseCaseProvider,
-} from './transactions.providers';
-import { TransactionsController } from './presentation/transactions.controller';
-import { TransactionTypeOrmEntity } from './infrastructure/entities/transaction.typeorm-entity';
+import { TransactionProviders } from './transactions.providers';
+import { TransactionsController } from './presentation';
+import { TransactionTypeOrmEntity } from './infrastructure';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TransactionTypeOrmEntity])],
   controllers: [TransactionsController],
-  providers: [
-    TransactionRepositoryProvider,
-    CreateTransactionUseCaseProvider,
-    GetAllTransactionsUseCaseProvider,
+  providers: [...TransactionProviders],
+  exports: [
+    // Exportar servicios que otros módulos puedan necesitar
+    ...TransactionProviders,
   ],
 })
 export class TransactionsModule {}

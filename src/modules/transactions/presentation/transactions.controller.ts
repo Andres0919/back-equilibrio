@@ -1,36 +1,68 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
+import { ApiTags } from '@nestjs/swagger';
 import {
   CreateTransactionUseCase,
-  CreateTransactionInput,
-} from '../application/use-cases/create-transaction.use-case';
-import { GetAllTransactionsUseCase } from '../application/use-cases/get-all-transactions.use-case';
-import { Currency } from '../domain/entities/transaction.entity';
+  CreateTransactionCommand,
+  GetAllTransactionsUseCase,
+  GetAllTransactionsQuery,
+} from '../application';
+import { CreateTransactionDto, TransactionResponseDto } from './dtos';
+import {
+  ApiCreateTransaction,
+  ApiGetAllTransactions,
+} from '../../../common/decorators';
 
+@ApiTags('transactions')
 @Controller('transactions')
 export class TransactionsController {
   constructor(
-    private readonly createTransaction: CreateTransactionUseCase,
-    private readonly getAllTransactions: GetAllTransactionsUseCase,
+    private readonly createTransactionUseCase: CreateTransactionUseCase,
+    private readonly getAllTransactionsUseCase: GetAllTransactionsUseCase,
   ) {}
 
   @Post()
-  async create(@Body() body: CreateTransactionInput) {
-    const input = {
-      id: uuid(),
-      amount: body.amount,
-      type: body.type,
-      currency: body.currency as Currency,
-      categoryId: body.categoryId,
-      date: new Date(body.date as unknown as string),
-      description: body.description,
+  @ApiCreateTransaction()
+  async create(
+    @Body() createTransactionDto: CreateTransactionDto,
+  ): Promise<TransactionResponseDto> {
+    const command: CreateTransactionCommand = {
+      amount: createTransactionDto.amount,
+      type: createTransactionDto.type,
+      currency: createTransactionDto.currency,
+      categoryId: createTransactionDto.categoryId,
+      date: new Date(createTransactionDto.date),
+      description: createTransactionDto.description,
     };
 
-    return this.createTransaction.execute(input);
+    const result = await this.createTransactionUseCase.execute(command);
+
+    return {
+      id: result.id,
+      amount: result.amount,
+      type: result.type,
+      currency: result.currency,
+      categoryId: result.categoryId,
+      date: result.date,
+      description: result.description,
+      createdAt: result.createdAt,
+    };
   }
 
   @Get()
-  async findAll() {
-    return this.getAllTransactions.execute();
+  @ApiGetAllTransactions()
+  async findAll(): Promise<TransactionResponseDto[]> {
+    const query: GetAllTransactionsQuery = {};
+    const result = await this.getAllTransactionsUseCase.execute(query);
+
+    return result.transactions.map((transaction) => ({
+      id: transaction.id,
+      amount: transaction.amount,
+      type: transaction.type,
+      currency: transaction.currency,
+      categoryId: transaction.categoryId,
+      date: transaction.date,
+      description: transaction.description,
+      createdAt: transaction.createdAt,
+    }));
   }
 }

@@ -1,40 +1,129 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Transaction } from '../../domain/entities/transaction.entity';
+import { Repository, Between } from 'typeorm';
+import {
+  Transaction,
+  TransactionRepository,
+  TransactionFilters,
+  TransactionType,
+} from '../../domain';
 import { TransactionTypeOrmEntity } from '../entities/transaction.typeorm-entity';
-import { ITransactionRepository } from '../../domain/repositories/transaction.repository';
 
 @Injectable()
-export class TransactionTypeOrmRepository implements ITransactionRepository {
+export class TransactionTypeOrmRepository implements TransactionRepository {
   constructor(
     @InjectRepository(TransactionTypeOrmEntity)
-    private readonly transactionRepository: Repository<TransactionTypeOrmEntity>,
+    private readonly ormRepository: Repository<TransactionTypeOrmEntity>,
   ) {}
 
   async save(transaction: Transaction): Promise<Transaction> {
     const transactionEntity = this.toTypeOrmEntity(transaction);
-    const savedEntity =
-      await this.transactionRepository.save(transactionEntity);
+    const savedEntity = await this.ormRepository.save(transactionEntity);
     return this.toDomainEntity(savedEntity);
   }
 
   async findAll(): Promise<Transaction[]> {
-    const entities = await this.transactionRepository.find({
-      order: { date: 'DESC' },
+    const entities = await this.ormRepository.find({
+      order: { date: 'DESC', createdAt: 'DESC' },
     });
     return entities.map((entity) => this.toDomainEntity(entity));
   }
 
   async findById(id: string): Promise<Transaction | null> {
-    const entity = await this.transactionRepository.findOne({
+    const entity = await this.ormRepository.findOne({
       where: { id },
     });
     return entity ? this.toDomainEntity(entity) : null;
   }
 
   async delete(id: string): Promise<void> {
-    await this.transactionRepository.delete(id);
+    await this.ormRepository.delete(id);
+  }
+
+  async findByFilters(filters: TransactionFilters): Promise<Transaction[]> {
+    const queryBuilder = this.ormRepository.createQueryBuilder('transaction');
+
+    if (filters.type) {
+      queryBuilder.andWhere('transaction.type = :type', { type: filters.type });
+    }
+
+    if (filters.currency) {
+      queryBuilder.andWhere('transaction.currency = :currency', {
+        currency: filters.currency,
+      });
+    }
+
+    if (filters.categoryId) {
+      queryBuilder.andWhere('transaction.categoryId = :categoryId', {
+        categoryId: filters.categoryId,
+      });
+    }
+
+    if (filters.dateFrom && filters.dateTo) {
+      queryBuilder.andWhere('transaction.date BETWEEN :dateFrom AND :dateTo', {
+        dateFrom: filters.dateFrom,
+        dateTo: filters.dateTo,
+      });
+    } else if (filters.dateFrom) {
+      queryBuilder.andWhere('transaction.date >= :dateFrom', {
+        dateFrom: filters.dateFrom,
+      });
+    } else if (filters.dateTo) {
+      queryBuilder.andWhere('transaction.date <= :dateTo', {
+        dateTo: filters.dateTo,
+      });
+    }
+
+    if (filters.amountMin !== undefined) {
+      queryBuilder.andWhere('transaction.amount >= :amountMin', {
+        amountMin: filters.amountMin,
+      });
+    }
+
+    if (filters.amountMax !== undefined) {
+      queryBuilder.andWhere('transaction.amount <= :amountMax', {
+        amountMax: filters.amountMax,
+      });
+    }
+
+    queryBuilder.orderBy('transaction.date', 'DESC');
+
+    const entities = await queryBuilder.getMany();
+    return entities.map((entity) => this.toDomainEntity(entity));
+  }
+
+  async findByCategory(categoryId: string): Promise<Transaction[]> {
+    const entities = await this.ormRepository.find({
+      where: { categoryId },
+      order: { date: 'DESC' },
+    });
+    return entities.map((entity) => this.toDomainEntity(entity));
+  }
+
+  async findByDateRange(from: Date, to: Date): Promise<Transaction[]> {
+    const entities = await this.ormRepository.find({
+      where: {
+        date: Between(from, to),
+      },
+      order: { date: 'DESC' },
+    });
+    return entities.map((entity) => this.toDomainEntity(entity));
+  }
+
+  async getTotalAmountByType(type: TransactionType): Promise<number> {
+    const result = await this.ormRepository
+      .createQueryBuilder('transaction')
+      .select('SUM(transaction.amount)', 'total')
+      .where('transaction.type = :type', { type })
+      .getRawOne<{ total: string }>();
+
+    return parseFloat(result?.total ?? '0') || 0;
+  }
+
+  async countByCategory(categoryId: string): Promise<number> {
+    return this.ormRepository.count({
+      where: { categoryId },
+    });
   }
 
   private toTypeOrmEntity(transaction: Transaction): TransactionTypeOrmEntity {
@@ -46,11 +135,13 @@ export class TransactionTypeOrmRepository implements ITransactionRepository {
     entity.categoryId = transaction.categoryId;
     entity.date = transaction.date;
     entity.description = transaction.description;
+    entity.createdAt = transaction.createdAt;
+    entity.updatedAt = transaction.updatedAt;
     return entity;
   }
 
   private toDomainEntity(entity: TransactionTypeOrmEntity): Transaction {
-    return new Transaction({
+    return Transaction.create({
       id: entity.id,
       amount: entity.amount,
       type: entity.type,
@@ -58,6 +149,8 @@ export class TransactionTypeOrmRepository implements ITransactionRepository {
       categoryId: entity.categoryId,
       date: entity.date,
       description: entity.description,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
     });
   }
 }
