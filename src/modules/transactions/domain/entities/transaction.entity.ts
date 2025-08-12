@@ -11,7 +11,8 @@ export enum Currency {
 }
 
 export interface TransactionProps {
-  id: string;
+  id?: number; // Optional for creation, required for existing entities
+  uid: string; // Required - must be provided from outside the domain
   amount: number;
   type: TransactionType;
   currency: Currency;
@@ -24,7 +25,8 @@ export interface TransactionProps {
 
 export class Transaction extends DomainEntity {
   private constructor(
-    id: string,
+    id: number | undefined,
+    uid: string,
     private readonly _amount: number,
     private readonly _type: TransactionType,
     private readonly _currency: Currency,
@@ -34,7 +36,7 @@ export class Transaction extends DomainEntity {
     createdAt?: Date,
     updatedAt?: Date,
   ) {
-    super(id, createdAt, updatedAt);
+    super(id || 0, uid, createdAt, updatedAt); // id will be set by database if undefined
   }
 
   // Factory method
@@ -42,9 +44,11 @@ export class Transaction extends DomainEntity {
     this.validateAmount(props.amount);
     this.validateCategoryId(props.categoryId);
     this.validateDate(props.date);
+    this.validateUid(props.uid);
 
     return new Transaction(
       props.id,
+      props.uid,
       props.amount,
       props.type,
       props.currency,
@@ -100,6 +104,12 @@ export class Transaction extends DomainEntity {
     }
   }
 
+  private static validateUid(uid: string): void {
+    if (!uid || uid.trim().length === 0) {
+      throw new ValidationError('UID is required');
+    }
+  }
+
   // Domain methods
   isIncome(): boolean {
     return this._type === TransactionType.INCOME;
@@ -116,7 +126,7 @@ export class Transaction extends DomainEntity {
   equals(other: Transaction): boolean {
     return (
       other instanceof Transaction &&
-      this.id === other.id &&
+      this.uid === other.uid &&
       this._amount === other._amount &&
       this._type === other._type &&
       this._currency === other._currency &&
@@ -129,6 +139,7 @@ export class Transaction extends DomainEntity {
   toPrimitives(): TransactionProps {
     return {
       id: this.id,
+      uid: this.uid,
       amount: this._amount,
       type: this._type,
       currency: this._currency,

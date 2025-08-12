@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
-import { CreateTransactionDto } from '../../modules/transactions/presentation/create-transaction.dto';
+import { CreateTransactionDto } from '../../modules/transactions/presentation/dtos/create-transaction.dto';
 import { TransactionResponseDto } from '../../modules/transactions/presentation/dtos/transaction-response.dto';
 import { ApiCreate, ApiGetAll } from './api-docs.decorator';
 

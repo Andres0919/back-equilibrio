@@ -37,7 +37,7 @@ export class TransactionsController {
     const result = await this.createTransactionUseCase.execute(command);
 
     return {
-      id: result.id,
+      uid: result.uid,
       amount: result.amount,
       type: result.type,
       currency: result.currency,
@@ -55,7 +55,7 @@ export class TransactionsController {
     const result = await this.getAllTransactionsUseCase.execute(query);
 
     return result.transactions.map((transaction) => ({
-      id: transaction.id,
+      uid: transaction.uid,
       amount: transaction.amount,
       type: transaction.type,
       currency: transaction.currency,
@@ -63,6 +63,7 @@ export class TransactionsController {
       date: transaction.date,
       description: transaction.description,
       createdAt: transaction.createdAt,
+      updatedAt: transaction.updatedAt,
     }));
   }
 }

@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { UseCase } from '../../../../../shared/application';
 import { ValidationError } from '../../../../../shared/domain';
 import {
@@ -6,6 +5,7 @@ import {
   TransactionType,
   Currency,
   TransactionRepository,
+  UidGenerator,
 } from '../../../domain';
 
 export interface CreateTransactionCommand {
@@ -18,7 +18,7 @@ export interface CreateTransactionCommand {
 }
 
 export interface CreateTransactionResult {
-  id: string;
+  uid: string; // Expose UID directly
   amount: number;
   type: TransactionType;
   currency: Currency;
@@ -31,7 +31,10 @@ export interface CreateTransactionResult {
 export class CreateTransactionUseCase
   implements UseCase<CreateTransactionCommand, CreateTransactionResult>
 {
-  constructor(private readonly transactionRepository: TransactionRepository) {}
+  constructor(
+    private readonly transactionRepository: TransactionRepository,
+    private readonly uidGenerator: UidGenerator,
+  ) {}
 
   async execute(
     command: CreateTransactionCommand,
@@ -41,7 +44,7 @@ export class CreateTransactionUseCase
 
     // Create domain entity
     const transaction = Transaction.create({
-      id: this.generateId(),
+      uid: this.uidGenerator.generate(),
       amount: command.amount,
       type: command.type,
       currency: command.currency,
@@ -71,13 +74,9 @@ export class CreateTransactionUseCase
     }
   }
 
-  private generateId(): string {
-    return uuidv4();
-  }
-
   private mapToResult(transaction: Transaction): CreateTransactionResult {
     return {
-      id: transaction.id,
+      uid: transaction.uid,
       amount: transaction.amount,
       type: transaction.type,
       currency: transaction.currency,

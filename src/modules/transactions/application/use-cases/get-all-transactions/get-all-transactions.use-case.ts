@@ -13,7 +13,7 @@ export interface GetAllTransactionsQuery {
 }
 
 export interface TransactionDto {
-  id: string;
+  uid: string; // Expose UID directly
   amount: number;
   type: TransactionType;
   currency: Currency;
@@ -75,7 +75,7 @@ export class GetAllTransactionsUseCase
 
   private mapToDto(transaction: Transaction): TransactionDto {
     return {
-      id: transaction.id,
+      uid: transaction.uid,
       amount: transaction.amount,
       type: transaction.type,
       currency: transaction.currency,

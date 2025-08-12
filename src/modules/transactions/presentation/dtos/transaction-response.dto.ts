@@ -6,10 +6,10 @@ import {
 
 export class TransactionResponseDto {
   @ApiProperty({
-    description: 'Identificador único de la transacción',
+    description: 'Identificador único de la transacción (UID)',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  id: string;
+  uid: string;
 
   @ApiProperty({
     description: 'Monto de la transacción',

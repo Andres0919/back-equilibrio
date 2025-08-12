@@ -1,9 +1,10 @@
 import {
   Entity,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 import {
   TransactionType,
@@ -12,8 +13,12 @@ import {
 
 @Entity('transactions')
 export class TransactionTypeOrmEntity {
-  @PrimaryColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column('uuid', { unique: true })
+  @Index()
+  uid: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   amount: number;

@@ -29,15 +29,21 @@ export class TransactionTypeOrmRepository implements TransactionRepository {
     return entities.map((entity) => this.toDomainEntity(entity));
   }
 
-  async findById(id: string): Promise<Transaction | null> {
+  async findByUid(uid: string): Promise<Transaction | null> {
     const entity = await this.ormRepository.findOne({
-      where: { id },
+      where: { uid },
     });
     return entity ? this.toDomainEntity(entity) : null;
   }
 
+  async findById(id: string): Promise<Transaction | null> {
+    // For backward compatibility, treat string as uid
+    return this.findByUid(id);
+  }
+
   async delete(id: string): Promise<void> {
-    await this.ormRepository.delete(id);
+    // For backward compatibility, treat string as uid
+    await this.ormRepository.delete({ uid: id });
   }
 
   async findByFilters(filters: TransactionFilters): Promise<Transaction[]> {
@@ -128,21 +134,30 @@ export class TransactionTypeOrmRepository implements TransactionRepository {
 
   private toTypeOrmEntity(transaction: Transaction): TransactionTypeOrmEntity {
     const entity = new TransactionTypeOrmEntity();
-    entity.id = transaction.id;
+    // Only set id if it exists (for updates), let database generate it for new records
+    if (transaction.id && transaction.id !== 0) {
+      entity.id = transaction.id;
+    }
+    entity.uid = transaction.uid;
     entity.amount = transaction.amount;
     entity.type = transaction.type;
     entity.currency = transaction.currency;
     entity.categoryId = transaction.categoryId;
     entity.date = transaction.date;
     entity.description = transaction.description;
-    entity.createdAt = transaction.createdAt;
-    entity.updatedAt = transaction.updatedAt;
+    if (transaction.createdAt) {
+      entity.createdAt = transaction.createdAt;
+    }
+    if (transaction.updatedAt) {
+      entity.updatedAt = transaction.updatedAt;
+    }
     return entity;
   }
 
   private toDomainEntity(entity: TransactionTypeOrmEntity): Transaction {
     return Transaction.create({
       id: entity.id,
+      uid: entity.uid,
       amount: entity.amount,
       type: entity.type,
       currency: entity.currency,

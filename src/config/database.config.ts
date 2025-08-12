@@ -13,6 +13,8 @@ export default registerAs('database', (): TypeOrmModuleOptions => {
     entities: [TransactionTypeOrmEntity],
     synchronize: process.env.NODE_ENV !== 'production',
     logging: process.env.NODE_ENV === 'development',
+    migrations: ['dist/migrations/*.js'],
+    migrationsRun: process.env.NODE_ENV === 'production',
     ssl:
       process.env.NODE_ENV === 'production'
         ? { rejectUnauthorized: false }
