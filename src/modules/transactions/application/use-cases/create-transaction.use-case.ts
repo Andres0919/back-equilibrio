@@ -5,7 +5,7 @@ import {
 } from '../../domain/entities/transaction.entity';
 import { ITransactionRepository } from '../../domain/repositories/transaction.repository';
 
-export interface Input {
+export interface CreateTransactionInput {
   id: string;
   amount: number;
   type: TransactionType;
@@ -18,7 +18,7 @@ export interface Input {
 export class CreateTransactionUseCase {
   constructor(private readonly repo: ITransactionRepository) {}
 
-  async execute(input: Input): Promise<Transaction> {
+  async execute(input: CreateTransactionInput): Promise<Transaction> {
     if (input.currency !== Currency.COP) {
       throw new Error('Only COP is supported for now');
     }

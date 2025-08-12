@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import {
   CreateTransactionUseCase,
-  Input,
+  CreateTransactionInput,
 } from '../application/use-cases/create-transaction.use-case';
 import { GetAllTransactionsUseCase } from '../application/use-cases/get-all-transactions.use-case';
 import { Currency } from '../domain/entities/transaction.entity';
@@ -15,7 +15,7 @@ export class TransactionsController {
   ) {}
 
   @Post()
-  async create(@Body() body: Input) {
+  async create(@Body() body: CreateTransactionInput) {
     const input = {
       id: uuid(),
       amount: body.amount,
