@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import { TransactionTypeOrmEntity } from './src/modules/transactions/infrastructure/entities/transaction.typeorm-entity';
+import { CategoryTypeOrmEntity } from './src/modules/categories/infrastructure/entities/category.typeorm-entity';
 
 export default new DataSource({
   type: 'postgres',
@@ -8,7 +9,7 @@ export default new DataSource({
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'password',
   database: process.env.DB_DATABASE || 'equilibrio',
-  entities: [TransactionTypeOrmEntity],
+  entities: [TransactionTypeOrmEntity, CategoryTypeOrmEntity],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
   logging: true,

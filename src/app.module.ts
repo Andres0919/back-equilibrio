@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { TransactionsModule } from './modules/transactions/transactions.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 import databaseConfig from './config/database.config';
 import appConfig from './config/app.config';
 import { validationSchema } from './config/validation.schema';
@@ -20,6 +21,7 @@ import { validationSchema } from './config/validation.schema';
         configService.get<TypeOrmModuleOptions>('database')!,
     }),
     TransactionsModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {}

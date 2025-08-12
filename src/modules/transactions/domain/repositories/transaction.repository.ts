@@ -13,12 +13,19 @@ export interface TransactionFilters {
   dateTo?: Date;
   amountMin?: number;
   amountMax?: number;
+  description?: string;
 }
 
 export interface TransactionRepository extends Repository<Transaction> {
-  findByFilters(filters: TransactionFilters): Promise<Transaction[]>;
+  findByFilters(
+    filters: TransactionFilters,
+    limit?: number,
+    offset?: number,
+  ): Promise<Transaction[]>;
   findByCategory(categoryId: string): Promise<Transaction[]>;
   findByDateRange(from: Date, to: Date): Promise<Transaction[]>;
+  findAllPaginated(limit: number, offset: number): Promise<Transaction[]>;
   getTotalAmountByType(type: TransactionType): Promise<number>;
   countByCategory(categoryId: string): Promise<number>;
+  countByFilters(filters: TransactionFilters): Promise<number>;
 }
