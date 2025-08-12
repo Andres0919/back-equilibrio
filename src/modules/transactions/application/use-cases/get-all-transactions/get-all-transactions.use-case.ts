@@ -13,7 +13,7 @@ export interface GetAllTransactionsQuery {
 }
 
 export interface TransactionDto {
-  uid: string; // Expose UID directly
+  uid: string; // Expose UID instead of internal ID
   amount: number;
   type: TransactionType;
   currency: Currency;

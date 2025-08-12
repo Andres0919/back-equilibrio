@@ -169,8 +169,8 @@ src/
 
 ### **Value Objects**
 
-- **Money**: Encapsula monto y moneda con operaciones matemáticas
-- **TransactionId**: UUID tipado y validado
+- **Money**: Monto y validaciones monetarias (implementación futura)
+- **TransactionId**: UUID tipado y validado (implementación futura)
 
 ## 🔌 Puertos y Adaptadores
 

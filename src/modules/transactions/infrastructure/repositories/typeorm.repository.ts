@@ -29,20 +29,14 @@ export class TransactionTypeOrmRepository implements TransactionRepository {
     return entities.map((entity) => this.toDomainEntity(entity));
   }
 
-  async findByUid(uid: string): Promise<Transaction | null> {
+  async findById(id: string): Promise<Transaction | null> {
     const entity = await this.ormRepository.findOne({
-      where: { uid },
+      where: { uid: id },
     });
     return entity ? this.toDomainEntity(entity) : null;
   }
 
-  async findById(id: string): Promise<Transaction | null> {
-    // For backward compatibility, treat string as uid
-    return this.findByUid(id);
-  }
-
   async delete(id: string): Promise<void> {
-    // For backward compatibility, treat string as uid
     await this.ormRepository.delete({ uid: id });
   }
 

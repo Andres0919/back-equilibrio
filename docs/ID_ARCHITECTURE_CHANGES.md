@@ -85,8 +85,7 @@ CREATE INDEX IDX_transactions_uid ON transactions(uid);
 
 ### 4. Repositorio TypeORM (`TransactionTypeOrmRepository`)
 
-- Método `findByUid()` agregado
-- Método `findById()` redirige a `findByUid()` para compatibilidad
+- Método `findById()` busca por `uid` (para compatibilidad con API)
 - Mapeos actualizados para manejar ambos campos
 
 ### 5. Repositorio In-Memory (`InMemoryTransactionRepository`)
@@ -132,6 +131,7 @@ Si ya tienes datos en la base de datos:
 ```typescript
 // Crear transacción (el UID se genera automáticamente)
 const transaction = Transaction.create({
+  uid: uidGenerator.generate(),
   amount: 100000,
   type: TransactionType.INCOME,
   currency: Currency.COP,

@@ -63,7 +63,6 @@ export class TransactionsController {
       date: transaction.date,
       description: transaction.description,
       createdAt: transaction.createdAt,
-      updatedAt: transaction.updatedAt,
     }));
   }
 }

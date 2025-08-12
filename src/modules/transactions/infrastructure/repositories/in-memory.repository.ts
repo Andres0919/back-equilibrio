@@ -24,7 +24,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
       } else {
         // Update existing transaction
         const index = this.transactions.findIndex(
-          (t) => t.id === transaction.id,
+          (t) => t.uid === transaction.uid,
         );
         if (index >= 0) {
           this.transactions[index] = transaction;
@@ -47,10 +47,6 @@ export class InMemoryTransactionRepository implements TransactionRepository {
       const transaction = this.transactions.find((t) => t.uid === id);
       resolve(transaction || null);
     });
-  }
-
-  async findByUid(uid: string): Promise<Transaction | null> {
-    return this.findById(uid);
   }
 
   async delete(id: string): Promise<void> {

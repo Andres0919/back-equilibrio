@@ -4,7 +4,6 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  Index,
 } from 'typeorm';
 import {
   TransactionType,
@@ -17,7 +16,6 @@ export class TransactionTypeOrmEntity {
   id: number;
 
   @Column('uuid', { unique: true })
-  @Index()
   uid: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
@@ -36,7 +34,7 @@ export class TransactionTypeOrmEntity {
   })
   currency: Currency;
 
-  @Column('uuid', { name: 'category_id' })
+  @Column('uuid')
   categoryId: string;
 
   @Column('timestamp')
@@ -48,14 +46,12 @@ export class TransactionTypeOrmEntity {
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
-    name: 'created_at',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
-    name: 'updated_at',
   })
   updatedAt: Date;
 }
