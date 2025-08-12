@@ -1,11 +1,10 @@
-import { applyDecorators, SetMetadata } from '@nestjs/common';
+import { applyDecorators, SetMetadata, HttpStatus, Type } from '@nestjs/common';
 import {
   ApiOperation,
   ApiResponse,
   ApiBody,
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
-  HttpStatus,
 } from '@nestjs/swagger';
 
 // Metadata keys
@@ -16,9 +15,9 @@ interface ApiConfig {
     summary: string;
     description?: string;
   };
-  body?: any;
+  body?: Type<unknown> | string;
   response?: {
-    type: any;
+    type: Type<unknown> | string | [Type<unknown>];
     status?: HttpStatus;
     description?: string;
   };
@@ -95,7 +94,7 @@ export const GetAllTransactionsApi = () =>
       description: 'Lista todas las transacciones',
     },
     response: {
-      type: ['TransactionResponseDto'], // Array notation
+      type: 'TransactionResponseDto', // Array se maneja con isArray en swagger
     },
     errors: {
       badRequest: false, // No incluir error 400 para GET
