@@ -1,12 +1,12 @@
 import { Provider } from '@nestjs/common';
 import { CreateTransactionUseCase } from './application/use-cases/create-transaction.use-case';
 import { GetAllTransactionsUseCase } from './application/use-cases/get-all-transactions.use-case';
-import { InMemoryTransactionRepository } from './infrastructure/repositories/in-memory.repository';
+import { TransactionTypeOrmRepository } from './infrastructure/repositories/typeorm.repository';
 import { ITransactionRepository } from './domain/repositories/transaction.repository';
 
 export const TransactionRepositoryProvider: Provider = {
   provide: 'TransactionRepository',
-  useClass: InMemoryTransactionRepository,
+  useClass: TransactionTypeOrmRepository,
 };
 
 export const CreateTransactionUseCaseProvider: Provider = {
