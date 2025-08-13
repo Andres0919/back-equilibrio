@@ -1,5 +1,9 @@
 import { DataSource } from 'typeorm';
 import { ENTITIES } from './src/config/entities.config';
+import * as dotenv from 'dotenv';
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+dotenv.config();
 
 export default new DataSource({
   type: 'postgres',
