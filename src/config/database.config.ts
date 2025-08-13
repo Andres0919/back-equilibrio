@@ -11,7 +11,7 @@ export default registerAs('database', (): TypeOrmModuleOptions => {
     password: process.env.DB_PASSWORD || 'password',
     database: process.env.DB_DATABASE || 'equilibrio',
     entities: ENTITIES,
-    synchronize: process.env.NODE_ENV !== 'production',
+    synchronize: false, // Always use migrations instead of auto-sync
     logging: process.env.NODE_ENV === 'development',
     migrations: ['dist/migrations/*.js'],
     migrationsRun: process.env.NODE_ENV === 'production',
